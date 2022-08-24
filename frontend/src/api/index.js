@@ -1,13 +1,31 @@
 import axios from "axios";
 
-export const fetchPosts = () => {
+export const fetchPosts = async () => {
   const url = process.env.REACT_APP_BASE_URL + "posts";
-  const response = axios.get(url);
-  return response;
+  const response = await axios.get(url);
+  return response.data;
 };
 
-export const createPost = (post) => {
+export const createPost = async (post) => {
   const url = process.env.REACT_APP_BASE_URL + "posts";
-  const response = axios.post(url, post);
-  return response;
+  const response = await axios.post(url, post);
+  return response.data;
 };
+
+export const updatePost = async (id, post) => {
+  const url = process.env.REACT_APP_BASE_URL + "posts/" + id;
+  const response = await axios.patch(url, post);
+  return response.data;
+};
+
+export const deletePost = async (id) => {
+  const url = process.env.REACT_APP_BASE_URL + "posts/" + id;
+  const response = await axios.delete(url, id)
+  return response
+}
+
+export const updateLikeCount = async (id) => {
+  const url = process.env.REACT_APP_BASE_URL + "posts/likePost/" + id;
+  const response = await axios.patch(url, id)
+  return response.data
+}
