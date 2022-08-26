@@ -14,6 +14,7 @@ import useStyles from "./style";
 import { fetchGoogleResponse } from "../../utils";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { signIn, signUp } from "../../redux/actions/auth";
 
 const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,14 +26,20 @@ const Auth = () => {
     password: "",
     confirmPassword: "",
   };
+  const [formData, setFormData] = useState(initialState);
   const navigate = useNavigate();
   const classes = useStyles();
   const dispatch = useDispatch();
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSignup) {
+      dispatch(signUp(formData, navigate));
+    } else {
+      dispatch(signIn(formData, navigate));
+    }
   };
-  const handleChange = () => {
-    console.log("sss");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -44,7 +51,6 @@ const Auth = () => {
   const googleSuccess = async (res) => {
     const credential = res.credential;
     const result = await fetchGoogleResponse(credential);
-    console.log(result);
     const { name, email, sub, picture } = result;
     try {
       dispatch({ type: "AUTH", payload: { name, email, sub, picture } });
@@ -68,15 +74,15 @@ const Auth = () => {
             {isSignup && (
               <>
                 <Input
-                  name="firstNmae"
+                  name="firstName"
                   label="First Name"
                   handleChange={handleChange}
                   autoFocus
                   half
                 />
                 <Input
-                  name="firstNmae"
-                  label="First Name"
+                  name="lastName"
+                  label="Last Name"
                   handleChange={handleChange}
                   half
                 />
