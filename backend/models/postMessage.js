@@ -10,6 +10,9 @@ const postSchema = new mongoose.Schema({
   creator: {
     type: String,
   },
+  name: {
+    type: String,
+  },
   tags: {
     type: Array,
   },
@@ -19,6 +22,10 @@ const postSchema = new mongoose.Schema({
   likeCount: {
     type: Number,
     default: 0,
+  },
+  likes: { 
+    type: [String], 
+    default: [] 
   },
   createdAt: {
     type: Date,

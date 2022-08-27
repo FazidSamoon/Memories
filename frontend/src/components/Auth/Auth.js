@@ -46,14 +46,20 @@ const Auth = () => {
   };
   const switchMode = () => {
     setIsSignup((prev) => !prev);
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    })
     setShowPassword(false);
   };
   const googleSuccess = async (res) => {
     const credential = res.credential;
-    const result = await fetchGoogleResponse(credential);
-    const { name, email, sub, picture } = result;
+    const response = await fetchGoogleResponse(credential);
     try {
-      dispatch({ type: "AUTH", payload: { name, email, sub, picture } });
+      dispatch({ type: "AUTH", payload: { response, token: credential } });
       navigate("/");
     } catch (error) {
       console.log(error);

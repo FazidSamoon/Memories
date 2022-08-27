@@ -1,7 +1,7 @@
 import Jwt from "jsonwebtoken";
 
-export const generateAccessToken = async (user) => {
-  const { _id, email } = user;
+export const generateAccessToken = async (response) => {
+  const { _id, email } = response;
   const token = Jwt.sign(
     { userID: _id, email: email },
     process.env.JWT_SECRET_KEY,
@@ -13,3 +13,4 @@ export const generateAccessToken = async (user) => {
 export const verifyToken = async (token) => {
   return Jwt.verify(token, process.env.JWT_SECRET_KEY);
 };
+ 

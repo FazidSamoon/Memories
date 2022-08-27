@@ -7,25 +7,22 @@ import { generateAccessToken } from "../utils/jwt";
 export const userLogin = async (req, res) => {
   const { email, password: userPassword } = req.body;
   try {
-    const user = await authModel.findOne({ email }).lean();
-    if (!user) {
+    const response = await authModel.findOne({ email }).lean();
+    if (!response) {
       return makeResponse(res, 404, "", "No user with given credentials");
     }
-    const hashedPassword = user.password;
+    const hashedPassword = response.password;
     const comparedPassword = await comparePassword(
       userPassword,
       hashedPassword
     );
-    if(!comparedPassword) {
-        return makeResponse(res, 400, "", "Username or password incorrect");
+    if (!comparedPassword) {
+      return makeResponse(res, 400, "", "Username or password incorrect");
     }
 
-    const token = await generateAccessToken({
-      email: user.email,
-      id: user._id,
-    });
-    delete user.password
-    makeResponse(res, 200, { user, token }, "Login successful");
+    const token = await generateAccessToken(response);
+    delete response.password;
+    makeResponse(res, 200, { response, token }, "Login successful");
   } catch (error) {
     console.log(error);
   }
@@ -33,8 +30,8 @@ export const userLogin = async (req, res) => {
 
 export const registerUser = async (req, res) => {
   const data = req.body;
-  const { email, username, password } = data;
-  if (!email || !password || !username) {
+  const { email, firstName, lastName, password } = data;
+  if (!email || !password) {
     return makeResponse(res, 404, "", "Please provide required data");
   }
   const user = await authModel.findOne({ email });
@@ -47,12 +44,13 @@ export const registerUser = async (req, res) => {
     );
   }
   const hashedPassword = await bcryptPassword(password);
-  const tempUser = { email, username, password: hashedPassword };
+  const tempUser = {
+    email,
+    name: `${firstName} ${lastName}`,
+    password: hashedPassword,
+  };
   const response = await authModel.create(tempUser);
-  const token = await generateAccessToken({
-    email: response.email,
-    id: response._id,
-  });
-  delete response.password
+  const token = await generateAccessToken(response);
+  delete response.password;
   makeResponse(res, 200, { response, token }, "User successfully created");
 };
